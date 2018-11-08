@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using PartialResultPoC.Repositories;
 using PartialResultPoC.Middlewares;
+using PartialResultPoC.Models;
 
 namespace PartialResultPoC.Controllers
 {
@@ -19,6 +22,7 @@ namespace PartialResultPoC.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<ParentModel>), StatusCodes.Status200OK)]
         public IActionResult Get()
         {
             var parentModels = _parentModelRepository.GetAll();

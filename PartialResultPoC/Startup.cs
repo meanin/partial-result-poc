@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using System.IO;
+using System.Reflection;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -6,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PartialResultPoC.Middlewares;
 using PartialResultPoC.Models;
 using PartialResultPoC.Repositories;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace PartialResultPoC
 {
@@ -23,18 +27,32 @@ namespace PartialResultPoC
         {
             services.AddSingleton(_ => new ParentModelRepository(ParentModelMockup.ParentModels));
             services.AddSingleton(_ => new ChildModelRepository(ChildModelMockup.ChildModels));
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "PartialResultPoC API", Version = "v1" });
+
+                // Set the comments path for the Swagger JSON and UI.
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+            });
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseMiddleware<PartialResultMiddleware>();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "PartialResultPoC API V1");
+            });
 
+            app.UseMiddleware<PartialResultMiddleware>();
             app.UseMvc();
         }
     }

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace PartialResultPoC.Middlewares
@@ -41,7 +42,8 @@ namespace PartialResultPoC.Middlewares
                     var partialSuccess = (bool)context.Items[PartialSuccessKey];
                     using (var streamWriter = new StreamWriter(originalBody))
                     {
-                        streamWriter.Write(new { Success = partialSuccess, Body = token });
+                        var content = JsonConvert.SerializeObject(new {Success = partialSuccess, Body = token});
+                        streamWriter.Write(content);
                     }
                     context.Response.Body = originalBody;
                 }
