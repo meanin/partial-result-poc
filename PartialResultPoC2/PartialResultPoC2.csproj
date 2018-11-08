@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <DockerTargetOS>Linux</DockerTargetOS>
-    <DocumentationFile>bin\Debug\netcoreapp2.1\PartialResultPoC.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\netcoreapp2.1\PartialResultPoC2.xml</DocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PartialResultPoC.Data\PartialResultPoC.Data.csproj" />
-    <ProjectReference Include="..\PartialResultPoC2\PartialResultPoC2.csproj" />
   </ItemGroup>
 
 </Project>

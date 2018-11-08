@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PartialResultPoC.Models
+namespace PartialResultPoC.Data.Models
 {
     public class ChildModel
     {

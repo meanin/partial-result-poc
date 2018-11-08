@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PartialResultPoC.Data.Models;
 using PartialResultPoC.Data.Repositories;
-using PartialResultPoC.Middlewares;
+using PartialResultPoC2.Extensions;
 
-namespace PartialResultPoC.Controllers
+namespace PartialResultPoC2.Controllers
 {
     [Route("api/[controller]")]
     public class ValuesController : Controller
@@ -22,10 +22,11 @@ namespace PartialResultPoC.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<ParentModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PartialResponse<IEnumerable<ParentModel>>), StatusCodes.Status200OK)]
         public IActionResult Get()
         {
             var parentModels = _parentModelRepository.GetAll();
+            var success = true;
             foreach (var parentModel in parentModels)
             {
                 foreach (var childId in parentModel.ChildrenIds)
@@ -33,14 +34,14 @@ namespace PartialResultPoC.Controllers
                     var child = _childModelRepository.GetById(childId);
                     if (child == null)
                     {
-                        this.SetPartialSuccess(false);
+                        success = false;
                         continue;
                     }
                     parentModel.ChildModels[childId] = child;
                 }
             }
 
-            return Ok(parentModels);
+            return this.PartialOk(parentModels, success);
         }
     }
 }

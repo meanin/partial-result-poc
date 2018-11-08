@@ -8,10 +8,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PartialResultPoC.Data.Models;
 using PartialResultPoC.Data.Repositories;
-using PartialResultPoC.Middlewares;
 using Swashbuckle.AspNetCore.Swagger;
 
-namespace PartialResultPoC
+namespace PartialResultPoC2
 {
     public class Startup
     {
@@ -29,7 +28,7 @@ namespace PartialResultPoC
             services.AddSingleton(_ => new ChildModelRepository(ChildModelMockup.ChildModels));
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "PartialResultPoC API", Version = "v1" });
+                c.SwaggerDoc("v1", new Info { Title = "PartialResultPoC2 API", Version = "v1" });
 
                 // Set the comments path for the Swagger JSON and UI.
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -49,10 +48,9 @@ namespace PartialResultPoC
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "PartialResultPoC API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "PartialResultPoC2 API V1");
             });
 
-            app.UseMiddleware<PartialResultMiddleware>();
             app.UseMvc();
         }
     }

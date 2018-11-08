@@ -63,4 +63,5 @@ namespace PartialResultPoC.Middlewares
             controllerBase.HttpContext.Items["PartialSuccess"] = partialSuccess;
         }
     }
+
 }

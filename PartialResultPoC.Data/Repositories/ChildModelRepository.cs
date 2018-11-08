@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using PartialResultPoC.Models;
+using PartialResultPoC.Data.Models;
 
-namespace PartialResultPoC.Repositories
+namespace PartialResultPoC.Data.Repositories
 {
     public class ChildModelRepository
     {
