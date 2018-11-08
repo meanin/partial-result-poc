@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 
 namespace PartialResultPoC.Middlewares
@@ -19,36 +20,45 @@ namespace PartialResultPoC.Middlewares
         {
             context.Items[PartialSuccessKey] = true;
             var originalBody = context.Response.Body;
-            try
+
+            using (var memStream = new MemoryStream())
             {
-                using (var memStream = new MemoryStream())
+                try
                 {
                     context.Response.Body = memStream;
                     await _next(context);
                     memStream.Position = 0;
-                    await memStream.CopyToAsync(originalBody);
+
                     if (context.Response.StatusCode != StatusCodes.Status200OK)
                     {
+                        await memStream.CopyToAsync(originalBody);
                         context.Response.Body = originalBody;
                         return;
                     }
 
-                    memStream.Position = 0;
                     var streamContent = new StreamReader(memStream).ReadToEnd();
-
                     var token = JToken.Parse(streamContent);
                     var partialSuccess = (bool)context.Items[PartialSuccessKey];
                     using (var streamWriter = new StreamWriter(originalBody))
                     {
-                        originalBody.Position = 0;
                         streamWriter.Write(new { Success = partialSuccess, Body = token });
                     }
+                    context.Response.Body = originalBody;
+                }
+                catch
+                {
+                    memStream.Position = 0;
+                    await memStream.CopyToAsync(originalBody);
+                    context.Response.Body = originalBody;
                 }
             }
-            finally
-            {
-                context.Response.Body = originalBody;
-            }
+        }
+    }
+    public static class PartialResultMiddlewareControllerBaseExtension
+    {
+        public static void SetPartialSuccess(this ControllerBase controllerBase, bool partialSuccess)
+        {
+            controllerBase.HttpContext.Items["PartialSuccess"] = partialSuccess;
         }
     }
 }

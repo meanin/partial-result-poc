@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using PartialResultPoC.Repositories;
+using PartialResultPoC.Middlewares;
 
 namespace PartialResultPoC.Controllers
 {
@@ -11,7 +11,7 @@ namespace PartialResultPoC.Controllers
         private readonly ChildModelRepository _childModelRepository;
 
         public ValuesController(
-            ParentModelRepository parentModelRepository, 
+            ParentModelRepository parentModelRepository,
             ChildModelRepository childModelRepository)
         {
             _parentModelRepository = parentModelRepository;
@@ -27,16 +27,15 @@ namespace PartialResultPoC.Controllers
                 foreach (var childId in parentModel.ChildrenIds)
                 {
                     var child = _childModelRepository.GetById(childId);
-                    if (child != null)
+                    if (child == null)
                     {
-                        parentModel.ChildModels[childId] = child;
+                        this.SetPartialSuccess(false);
+                        continue;
                     }
-                    else
-                    {
-                        // TODO: Graceful handling
-                    }
+                    parentModel.ChildModels[childId] = child;
                 }
             }
+
             return Ok(parentModels);
         }
     }
